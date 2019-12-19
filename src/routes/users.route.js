@@ -1,0 +1,1 @@
+import {verifyToken} from '../middleware/auth'
