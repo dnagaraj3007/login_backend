@@ -1,6 +1,6 @@
 import config from 'config';
 import jwt from 'jsonwebtoken';
-import joi from 'hapi/joi';
+import joi from '@hapi/joi';
 import mongoose from 'mongoose';
 
 const UserSchema = new mongoose.Schema({
@@ -29,7 +29,7 @@ const UserSchema = new mongoose.Schema({
 UserSchema.methods.generateAuthToken =()=>{
 	const token= jwt.sign({
 		_id: this._id,
-		username: this.username
+		email: this.email,
 		isAdmin:this.isAdmin
 	}, config.get('myprivatekey'), {expiresIn:'3 hours'});
 	return token;
@@ -39,13 +39,13 @@ const User = mongoose.model('User', UserSchema);
 
 const validateUser = (user)=>{
 	const schema = {
-		name: joi.string().min(3),max(50).required();
-		email: joi.string(5).min(3).max(255).required();
-		password: joi:string().max(255).required();
+		name: joi.string().min(3).max(50).required(),
+		email: joi.string(5).min(3).max(255).required(),
+		password: joi.string().max(255).required()
 	};
 	return joi.validate(user,schema);
 }
 
-export User= User;
-export validate= validateUser;
+export const user= User;
+export const validate= validateUser;
 

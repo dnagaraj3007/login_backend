@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 import config from 'config';
 
-function verifyToken = (req, res, next) => {
+const verifyToken = (req, res, next) => {
 	const token = req.headers['x-access-token'] || req.headers['authorization']
 	if(!token){
 		res.status(401).send({
@@ -20,4 +20,4 @@ function verifyToken = (req, res, next) => {
 	}
 }
 
-export verifyToken = verifyToken;
+export const auth = verifyToken;
