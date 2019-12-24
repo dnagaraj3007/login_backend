@@ -22,19 +22,20 @@ api.getCurrentUser = (req,res) => {
 }
 
 api.createNewUser = (req,res) =>{
-    try{
-        const result = validate(req.body);
-    }
-    catch(err){
-        console.log(err);
+    const result = validate(req.body)
+    if(result.error){
         return res.status(400).send({
-            message: error.details[0].message
+            message: result.error.details[0].message
         })
     }
     User.findOne({email:req.body.email}).then((data)=>{
         if(data){
-            res.status(400).send("User already registered with email id " +req.body.email );
+            return res.status(400).send("User already registered with email id " +req.body.email );
         }
+    }).catch((err)=>{
+    	return res.status(500).send({
+    		message: err.message || "Error fetching user"
+    	})
     })
     let user = new User({
         name:req.body.name,
@@ -43,14 +44,18 @@ api.createNewUser = (req,res) =>{
     })
     bcrypt.hash(user.password,10).then((password) =>{
         user.password = password
-        return user.save();
+        return user.save()
     }).then(()=>{
         const token = user.generateAuthToken();
-        res.header("x-auth-token", token).send({
+        return res.header("x-auth-token", token).send({
             _id: user._id,
             name: user.name,
             email: user.email
         });
+    }).catch(err =>{
+    	return res.status(500).send({
+    		message : err.message || "Error generating token"
+    	})
     })
 } 
 
